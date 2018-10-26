@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
-
-let mongoURI = "mongodb://localhost:27017/DevConnector";
+const { mongoURI } = require("./keys");
 
 mongoose.connect(
   mongoURI,
