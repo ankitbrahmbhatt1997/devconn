@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
+
 // @route     POST /api/auth/register
 // @fnc       Register a User
 // @access    Public
@@ -15,14 +16,14 @@ router.post("/register", (req, res) => {
 
   // Check Validation
   if (!isValid) {
-    return res.status(400).json(errors);
+    return res.status(400).json({ errors });
   }
-
+  console.log(isValid);
   User.findOne({ email: req.body.email })
     .then(user => {
       if (user) {
         errors.email = "Email already exists";
-        return res.status(400).json(errors);
+        return res.status(400).json({ errors });
       } else {
         let avatar = gravatar.url(req.body.email, {
           s: "200",
@@ -41,7 +42,10 @@ router.post("/register", (req, res) => {
             return user.save();
           })
           .then(savedUser => {
-            res.json(savedUser);
+            res.json({
+              email: savedUser.email,
+              name: savedUser.name
+            });
           })
           .catch(e => {
             console.log(e);
@@ -64,7 +68,7 @@ router.post("/login", (req, res) => {
 
   // Check Validation
   if (!isValid) {
-    return res.status(400).json(errors);
+    return res.status(400).json({ errors });
   }
 
   User.findOne({ email })
@@ -82,13 +86,13 @@ router.post("/login", (req, res) => {
               });
             } else {
               errors.password = "Password incorrect";
-              res.json(errors);
+              res.status(400).json({ errors });
             }
           })
           .catch(e => console.log(e));
       } else {
         errors.email = "User not found";
-        return res.status(400).json(errors);
+        return res.status(400).json({ errors });
       }
     })
     .catch(e => {

@@ -6,6 +6,7 @@ const Post = require("../../Models/Post");
 const Profile = require("../../Models/Profile");
 //requiring validation
 const validatePost = require("../../validation/post");
+const validateAnswers = require("../../validation/answers");
 
 //<--------------------------------------------ROUTES START-------------------------------------------------------->
 
@@ -20,12 +21,12 @@ router.get("/all", (req, res) => {
       const errors = {};
       if (!posts) {
         errors.noposts = "No posts present";
-        return res.status(404).json(errors);
+        return res.status(404).json({ errors });
       }
       return res.json(posts);
     })
     .catch(e => {
-      return res.status(500).json(e);
+      return res.status(500).json({ e });
     });
 });
 
@@ -37,18 +38,17 @@ router.get("/all", (req, res) => {
 
 router.get("/singlepost/:id", (req, res) => {
   Post.findOne({ _id: req.params.id })
-
+    .populate("answers.user", ["name", "avatar"])
     .then(post => {
-      console.log(post);
       const errors = {};
       if (!post) {
         errors.nopost = "No post Found with the given Id";
-        return res.status(404).json(errors);
+        return res.status(404).json({ errors });
       }
       return res.json(post);
     })
     .catch(e => {
-      return res.status(500).json(e);
+      return res.status(500).json({ e });
     });
 });
 
@@ -65,13 +65,14 @@ router.post(
     console.log(req.body);
     const { errors, isValid } = validatePost(req.body);
     if (!isValid) {
-      return res.json(errors);
+      return res.status(400).json({ errors });
     }
     const newPost = new Post({
       user: req.user.id,
-      name: req.body.name,
-      avatar: req.body.avatar,
-      text: req.body.text
+      name: req.user.name,
+      avatar: req.user.avatar,
+      text: req.body.text,
+      subject: req.body.subject
     });
 
     newPost
@@ -164,7 +165,7 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     Profile.findOne({ user: req.user.id }).then(profile => {
-      Post.findById(req.params.id)
+      Post.findOne({ _id: req.params.id })
         .then(post => {
           if (
             post.likes.filter(like => like.user.toString() === req.user.id)
@@ -193,38 +194,42 @@ router.post(
 
 //<-------------------------------------------------------------------------------------------------------------->
 
-// @route   POST api/posts/comment/:id
-// @desc    Add comment to post
+// @route   POST api/posts/answer/:id
+// @desc    Add answer to post
 // @access  Private
 
 router.post(
-  "/comment/:id",
+  "/answer/:id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    const { errors, isValid } = validatePostInput(req.body);
+    const { errors, isValid } = validateAnswers(req.body);
 
     // Check Validation
     if (!isValid) {
       // If any errors, send 400 with errors object
-      return res.status(400).json(errors);
+      return res.status(400).json({ errors });
     }
-
-    Post.findById(req.params.id)
+    console.log(req.params.id);
+    Post.findOne({ _id: req.params.id })
+      .populate("answers.user", ["name", "avatar"])
       .then(post => {
-        const newComment = {
+        const newAnswer = {
           text: req.body.text,
-          name: req.body.name,
-          avatar: req.body.avatar,
+          name: req.user.name,
+          avatar: req.user.avatar,
           user: req.user.id
         };
 
         // Add to comments array
-        post.comments.unshift(newComment);
+        post.answers.unshift(newAnswer);
 
         // Save
         post.save().then(post => res.json(post));
       })
-      .catch(err => res.status(404).json({ postnotfound: "No post found" }));
+      .catch(err => {
+        console.log(err);
+        res.status(404).json({ postnotfound: "No post found" });
+      });
   }
 );
 

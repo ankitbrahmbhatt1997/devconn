@@ -24,7 +24,7 @@ router.get(
       .then(profile => {
         if (!profile) {
           errors.noProfile = "No profile has been created Yet";
-          return res.status(400).json(errors);
+          return res.status(400).json({ errors });
         }
         return res.json(profile);
       })
@@ -88,12 +88,12 @@ router.get("/all", (req, res) => {
       const errors = {};
       if (!profiles) {
         errors.noProfile = "No profiles present";
-        return res.status(404).json(errors);
+        return res.status(404).json({ errors });
       }
       return res.json(profiles);
     })
     .catch(e => {
-      return res.status(500).json(e);
+      return res.status(500).json({ e });
     });
 });
 
@@ -111,7 +111,7 @@ router.post(
     // Check Validation
     if (!isValid) {
       // Return any errors with 400 status
-      return res.status(400).json(errors);
+      return res.status(400).json({ errors });
     }
 
     // Get fields
@@ -153,7 +153,7 @@ router.post(
         Profile.findOne({ handle: profileFields.handle }).then(profile => {
           if (profile) {
             errors.handle = "That handle already exists";
-            res.status(400).json(errors);
+            res.status(400).json({ errors });
           }
 
           // Save Profile
@@ -179,7 +179,7 @@ router.post(
     // Check Validation
     if (!isValid) {
       // Return any errors with 400 status
-      return res.status(400).json(errors);
+      return res.status(400).json({ errors });
     }
 
     Profile.findOne({ user: req.user.id }).then(profile => {
@@ -215,7 +215,7 @@ router.post(
     // Check Validation
     if (!isValid) {
       // Return any errors with 400 status
-      return res.status(400).json(errors);
+      return res.status(400).json({ errors });
     }
 
     Profile.findOne({ user: req.user.id }).then(profile => {
@@ -285,7 +285,7 @@ router.delete(
         // Save
         profile.save().then(profile => res.json(profile));
       })
-      .catch(err => res.status(404).json(err));
+      .catch(err => res.status(404).json({ err }));
   }
 );
 

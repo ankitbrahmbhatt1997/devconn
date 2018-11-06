@@ -52,7 +52,7 @@ userSchema.methods.createJWT = function() {
     avatar: user.avatar
   };
   return new Promise((resolve, reject) => {
-    jwt.sign(data, tokenSECRET, { expiresIn: "1h" }, (err, token) => {
+    jwt.sign(data, tokenSECRET, { expiresIn: "42h" }, (err, token) => {
       if (err) {
         return reject(err);
       } else {
