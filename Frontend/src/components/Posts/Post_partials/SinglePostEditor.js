@@ -19,6 +19,11 @@ class SinglePostEditor extends Component {
     let answerData = {
       text: this.state.text
     };
+    this.setState(() => {
+      return {
+        text: ""
+      };
+    });
 
     this.props.addAnswer(answerData, this.props.post._id);
   };
@@ -27,9 +32,7 @@ class SinglePostEditor extends Component {
     return (
       <div className="post-form mb-3">
         <div className="card card-info">
-          <div className="card-header bg-info text-white">
-            Answer The Question
-          </div>
+          <div className="card-header bg-info text-white">Can You Answer ?</div>
           <div>
             <CKEditor
               editor={ClassicEditor}

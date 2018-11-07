@@ -20,6 +20,13 @@ export default function SinglePostHeader(props) {
         <div className="col-md-10">
           <h5>{props.post.subject}</h5>
           <div className="lead">{htmlParser(props.post.text)}</div>
+          <button type="button" className="btn btn-light mr-1">
+            <i className="text-info fas fa-thumbs-up" />
+            <span className="badge badge-light" />
+          </button>
+          <button type="button" className="btn btn-light mr-1">
+            <i className="text-secondary fas fa-thumbs-down" />
+          </button>
         </div>
       </div>
     </div>

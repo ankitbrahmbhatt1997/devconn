@@ -4,6 +4,9 @@ const mongoose = require("mongoose");
 const passport = require("passport");
 const Post = require("../../Models/Post");
 const Profile = require("../../Models/Profile");
+const { searchUserInArray } = require("../../utils/postUtils");
+const { addUserInArray } = require("../../utils/postUtils");
+const { deleteUserInArray } = require("../../utils/postUtils");
 //requiring validation
 const validatePost = require("../../validation/post");
 const validateAnswers = require("../../validation/answers");
@@ -135,21 +138,35 @@ router.post(
     Profile.findOne({ user: req.user.id }).then(profile => {
       Post.findById(req.params.id)
         .then(post => {
-          if (
-            post.likes.filter(like => like.user.toString() === req.user.id)
-              .length > 0
-          ) {
-            return res
-              .status(400)
-              .json({ alreadyliked: "User already liked this post" });
+          if (searchUserInArray(post.dislikes, req.user.id)) {
+            deleteUserInArray(post.dislikes, req.user.id).then(newDislikes => {
+              addUserInArray(post.likes, req.user.id).then(newLikes => {
+                post.likes = newLikes;
+                post.dislikes = newDislikes;
+                post.save().then(post => res.send(post));
+              });
+            });
+          } else {
+            console.log(searchUserInArray(post.likes, req.user.id));
+            if (searchUserInArray(post.likes, req.user.id)) {
+              
+              return res
+                .status(400)
+                .json({ alreadyLiked: "Post is already liked by the user" });
+            } else {
+              addUserInArray(post.likes, req.user.id).then(newLikes => {
+                post.likes = newLikes;
+                post.save().then(post => res.send(post));
+              });
+            }
           }
-
-          // Add user id to likes array
-          post.likes.unshift({ user: req.user.id });
-
-          post.save().then(post => res.json(post));
         })
-        .catch(err => res.status(404).json({ postnotfound: "No post found" }));
+        .catch(err =>{
+         
+         console.log(err)
+          res.status(404).json({ postnotfound: "No post found" })
+        }
+          );
     });
   }
 );
@@ -167,25 +184,26 @@ router.post(
     Profile.findOne({ user: req.user.id }).then(profile => {
       Post.findOne({ _id: req.params.id })
         .then(post => {
-          if (
-            post.likes.filter(like => like.user.toString() === req.user.id)
-              .length === 0
-          ) {
-            return res
-              .status(400)
-              .json({ notliked: "You have not yet liked this post" });
+          if (searchUserInArray(post.likes, req.user.id)) {
+            deleteUserInArray(post.likes, req.user.id).then(newLikes => {
+              addUserInArray(post.dislikes, req.user.id).then(newDislikes => {
+                post.likes = newLikes;
+                post.dislikes = newDislikes;
+                post.save().then(post => res.send(post));
+              });
+            });
+          } else {
+            if (searchUserInArray(post.dislikes, req.user.id)) {
+              res.status(400).json({
+                alreadyDisliked: "Post is already disliked by the user"
+              });
+            } else {
+              addUserInArray(post.dislikes, req.user.id).then(newDislikes => {
+                post.dislikes = newDislikes;
+                post.save().then(post => res.send(post));
+              });
+            }
           }
-
-          // Get remove index
-          const removeIndex = post.likes
-            .map(item => item.user.toString())
-            .indexOf(req.user.id);
-
-          // Splice out of array
-          post.likes.splice(removeIndex, 1);
-
-          // Save
-          post.save().then(post => res.json(post));
         })
         .catch(err => res.status(404).json({ postnotfound: "No post found" }));
     });

@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { getPostById } from "../../actions/postActions";
 import SinglePostHeader from "./Post_partials/SinglePostHeader";
 import SinglePostEditor from "./Post_partials/SinglePostEditor";
+import SinglePostAnswers from "./Post_partials/SinglePostAnswers";
 import Spinner from "../partials/Spinner";
 
 class SinglePost extends Component {
@@ -24,6 +25,8 @@ class SinglePost extends Component {
             <div className="col-md-12">
               <SinglePostHeader post={singlePost} />
               <SinglePostEditor post={singlePost} />
+              <h1 className="display-4 text-center mt-5 mb-4">Answers</h1>
+              <SinglePostAnswers post={singlePost} />
             </div>
           </div>
         </div>
