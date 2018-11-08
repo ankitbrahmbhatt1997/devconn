@@ -72,6 +72,42 @@ export const addAnswer = (answerData, id) => dispatch => {
     });
 };
 
+export const addLike = id => dispatch => {
+  axios
+    .post(`/api/posts/like/${id}`)
+    .then(result => {
+      dispatch({
+        type: SET_POST,
+        payload: result.data
+      });
+    })
+    .catch(err => {
+      const { errors } = err.response.data;
+      dispatch({
+        type: allErrors,
+        errors
+      });
+    });
+};
+
+export const addDislike = id => dispatch => {
+  axios
+    .post(`/api/posts/unlike/${id}`)
+    .then(result => {
+      dispatch({
+        type: SET_POST,
+        payload: result.data
+      });
+    })
+    .catch(err => {
+      const { errors } = err.response.data;
+      dispatch({
+        type: allErrors,
+        errors
+      });
+    });
+};
+
 export const setLoading = () => {
   return {
     type: SET_LOADER

@@ -149,7 +149,7 @@ router.post(
           } else {
             console.log(searchUserInArray(post.likes, req.user.id));
             if (searchUserInArray(post.likes, req.user.id)) {
-              
+
               return res
                 .status(400)
                 .json({ alreadyLiked: "Post is already liked by the user" });
@@ -161,12 +161,12 @@ router.post(
             }
           }
         })
-        .catch(err =>{
-         
-         console.log(err)
+        .catch(err => {
+
+
           res.status(404).json({ postnotfound: "No post found" })
         }
-          );
+        );
     });
   }
 );
