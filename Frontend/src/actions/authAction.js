@@ -68,6 +68,25 @@ export const logoutUser = history => dispatch => {
   history.push("/login");
 };
 
+export const changeImage = Image => dispatch => {
+  const ImageData = new FormData();
+  ImageData.append("myImage", Image);
+  axios
+    .post("/api/auth/changeimage", ImageData)
+    .then(result => {
+      let { user } = result.data;
+      dispatch(setCurrentUser(user));
+    })
+    .catch(err => {
+      console.log(err.response);
+      let errors = err.response.data;
+      dispatch({
+        type: allErrors,
+        errors
+      });
+    });
+};
+
 export const setCurrentUser = user => {
   return {
     type: SET_CURRENT_USER,

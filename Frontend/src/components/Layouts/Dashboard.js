@@ -39,7 +39,10 @@ class Dashboard extends Component {
                 <div className="col-md-12">
                   <h1 className="display-4">Dashboard</h1>
                   <p className="lead text-muted">
-                    Welcome <Link to="/userProfile">{user.name}</Link>
+                    Welcome{" "}
+                    <Link to={`/developerProfile/:${userProfile.handle}`}>
+                      {user.name}
+                    </Link>
                   </p>
                   <DisplayDashboardUtilButtons />
                   <DisplayEducation education={userProfile.education} />

@@ -1,6 +1,28 @@
-import React from "react";
+import React, { Component } from "react";
+import Modal from "react-responsive-modal";
+import { searchUserInArray } from "../../../../utils/usefulCustomMethods";
 
 export default function Header(props) {
+  const { followers } = props.profile.user;
+  const { loggedInUser } = props;
+  let followContent;
+  if (searchUserInArray(followers, loggedInUser)) {
+    followContent = (
+      <p>
+        <a className="btn-unfollow" onClick={props.handleUnfollow}>
+          Following
+        </a>
+      </p>
+    );
+  } else {
+    followContent = (
+      <p>
+        <a className="btn btn-test" onClick={props.handleFollow}>
+          Follow
+        </a>
+      </p>
+    );
+  }
   return (
     <div>
       <div className="row">
@@ -13,6 +35,13 @@ export default function Header(props) {
                   src={props.profile.user.avatar}
                   alt="User"
                 />
+                {props.authenticated ? (
+                  <a className="text-white p-2" onClick={props.onOpenModal}>
+                    <i className="far fa-edit fa-2x" />
+                  </a>
+                ) : (
+                  ""
+                )}
               </div>
             </div>
             <div className="text-center">
@@ -64,6 +93,7 @@ export default function Header(props) {
                   <i className="fab fa-instagram fa-2x" />
                 </a>
               </p>
+              {!props.authenticated && followContent}
             </div>
           </div>
         </div>

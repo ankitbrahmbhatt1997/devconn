@@ -22,7 +22,25 @@ const userSchema = new mongoose.Schema({
   Date: {
     type: Date,
     default: Date.now
-  }
+  },
+  followers: [
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+        required: true
+      }
+    }
+  ],
+  following: [
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+        required: true
+      }
+    }
+  ]
 });
 
 // Method for creating hashPassword

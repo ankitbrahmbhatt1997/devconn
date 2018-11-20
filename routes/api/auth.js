@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
+const upload = require("../../config/multer");
 
 // @route     POST /api/auth/register
 // @fnc       Register a User
@@ -113,4 +114,25 @@ router.get(
   }
 );
 
+router.post(
+  "/changeimage",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("myImage"),
+  (req, res) => {
+    User.findOne({ email: req.user.email })
+      .then(user => {
+        console.log(user);
+        if (user) {
+          user.avatar = `/uploads/${req.file.filename}`;
+        }
+        user.save().then(user => {
+          res.send({ user });
+        });
+      })
+      .catch(e => {
+        console.log(e);
+        res.status(400).send({ e });
+      });
+  }
+);
 module.exports = router;

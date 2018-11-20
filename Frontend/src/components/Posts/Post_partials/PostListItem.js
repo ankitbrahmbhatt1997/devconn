@@ -19,15 +19,18 @@ export default function PostListItem(props) {
           </h4>
           <div>
             <button type="button" className="btn btn-light m-1">
-              <i className="text-info fas fa-thumbs-up" />
-              <span className="badge badge-light" />
-            </button>
-            <button type="button" className="btn btn-light m-1">
-              <i className="text-secondary fas fa-thumbs-down" />
-            </button>
+              <i className="text-info fas fa-thumbs-up"></i>
+              <span className="badge badge-light">{props.post.likes.length}</span>
+              </button>
+              <button type="button" className="btn btn-light m-1">
+              <i className="text-secondary fas fa-thumbs-down"></i>
+              <span className="badge badge-light">{props.post.dislikes.length}</span>
+              </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
+      );
+    }
+              
+ 

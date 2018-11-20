@@ -7,6 +7,9 @@ const Profile = require("../../Models/Profile");
 const validateProfileInput = require("../../validation/profile");
 const validateEducationInput = require("../../validation/education");
 const validateExperienceInput = require("../../validation/experience");
+const { searchUserInArray } = require("../../utils/postUtils");
+const { addUserInArray } = require("../../utils/postUtils");
+const { deleteUserInArray } = require("../../utils/postUtils");
 
 //<--------------------------------------------ROUTES START-------------------------------------------------------->
 
@@ -20,7 +23,7 @@ router.get(
   (req, res) => {
     let errors = {};
     Profile.findOne({ user: req.user.id })
-      .populate("user", ["name", "avatar"])
+      .populate("user", ["name", "avatar", "followers", "following"])
       .then(profile => {
         if (!profile) {
           errors.noProfile = "No profile has been created Yet";
@@ -39,7 +42,7 @@ router.get(
 
 router.get("/handle/:handle", (req, res) => {
   Profile.findOne({ handle: req.params.handle })
-    .populate("user", ["name", "avatar"])
+    .populate("user", ["name", "avatar", "followers", "following"])
     .then(profile => {
       const errors = {};
       if (!profile) {
@@ -61,7 +64,7 @@ router.get("/handle/:handle", (req, res) => {
 
 router.get("/userId/:user_id", (req, res) => {
   Profile.findOne({ user: req.params.user_id })
-    .populate("user", ["name", "avatar"])
+    .populate("user", ["name", "avatar", "followers", "following"])
     .then(profile => {
       const errors = {};
       if (!profile) {
@@ -83,7 +86,7 @@ router.get("/userId/:user_id", (req, res) => {
 
 router.get("/all", (req, res) => {
   Profile.find()
-    .populate("user", ["name", "avatar"])
+    .populate("user", ["name", "avatar", "followers", "following"])
     .then(profiles => {
       const errors = {};
       if (!profiles) {
@@ -306,6 +309,125 @@ router.delete(
   }
 );
 
-module.exports = router;
+//<-------------------------------------------------------------------------------------------------------------->
+
+// @route   POST api/profile/addconnections
+// @desc    update followers and followings
+// @access  Private
+
+router.post(
+  "/addconnections",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    User.findOne({ _id: req.user.id })
+      .then(user => {
+        console.log(searchUserInArray(user.following, req.body.targetId));
+        if (searchUserInArray(user.following, req.body.targetId)) {
+          res.status(400).json({ following: "already following" });
+        } else {
+          addUserInArray(user.following, req.body.targetId).then(
+            newFollowingArray => {
+              user.following = newFollowingArray;
+              user
+                .save()
+                .then(savedUser => {
+                  return User.findOne({ _id: req.body.targetId });
+                })
+                .then(targetUser => {
+                  if (searchUserInArray(targetUser.followers, req.user.id)) {
+                    res.status(400).json({ followers: "already a follower" });
+                  } else {
+                    const newFollowerArray = addUserInArray(
+                      targetUser.followers,
+                      req.user.id
+                    )
+                      .then(newFollowerArray => {
+                        targetUser.followers = newFollowerArray;
+                        return targetUser.save();
+                      })
+                      .then(newTargetUser => {
+                        return Profile.findOne({
+                          user: targetUser._id
+                        }).populate("user", [
+                          "name",
+                          "avatar",
+                          "followers",
+                          "following"
+                        ]);
+                      })
+                      .then(updatedProfile => {
+                        res.json(updatedProfile);
+                      });
+                  }
+                });
+            }
+          );
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+);
+
+//<-------------------------------------------------------------------------------------------------------------->
+
+// @route   POST api/profile/removeconnections
+// @desc    update followers and followings
+// @access  Private
+
+router.post(
+  "/removeconnections",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    User.findOne({ _id: req.user.id })
+      .then(user => {
+        if (!searchUserInArray(user.following, req.body.targetId)) {
+          res.status(400).json({ following: "Not Following" });
+        } else {
+          deleteUserInArray(user.following, req.body.targetId).then(
+            newFollowingArray => {
+              user.following = newFollowingArray;
+              user
+                .save()
+                .then(savedUser => {
+                  return User.findOne({ _id: req.body.targetId });
+                })
+                .then(targetUser => {
+                  if (!searchUserInArray(targetUser.followers, req.user.id)) {
+                    res.status(400).json({ followers: "Not a follower" });
+                  } else {
+                    const newFollowerArray = deleteUserInArray(
+                      targetUser.followers,
+                      req.user.id
+                    )
+                      .then(newFollowerArray => {
+                        targetUser.followers = newFollowerArray;
+                        return targetUser.save();
+                      })
+                      .then(newTargetUser => {
+                        return Profile.findOne({
+                          user: targetUser._id
+                        }).populate("user", [
+                          "name",
+                          "avatar",
+                          "followers",
+                          "following"
+                        ]);
+                      })
+                      .then(updatedProfile => {
+                        res.json(updatedProfile);
+                      });
+                  }
+                });
+            }
+          );
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+);
 
 module.exports = router;

@@ -181,13 +181,47 @@ export const deleteAccount = () => dispatch => {
       )
       .catch(err =>
         dispatch({
-          type: GET_ERRORS,
+          type: allErrors,
           payload: err.response.data
         })
       );
   }
 };
 
+export const follow = data => dispatch => {
+  axios
+    .post("/api/profile/addconnections", data)
+    .then(result => {
+      dispatch({
+        type: SET_PROFILE,
+        payload: result.data
+      });
+    })
+    .catch(err => {
+      dispatch({
+        type: allErrors,
+        payload: err.response.data
+      });
+    });
+};
+
+export const unfollow = data => dispatch => {
+  axios
+    .post("/api/profile/removeconnections", data)
+    .then(result => {
+      dispatch({
+        type: SET_PROFILE,
+        payload: result.data
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      dispatch({
+        type: allErrors,
+        payload: err.response.data
+      });
+    });
+};
 export const setLoading = () => {
   return {
     type: SET_LOADER

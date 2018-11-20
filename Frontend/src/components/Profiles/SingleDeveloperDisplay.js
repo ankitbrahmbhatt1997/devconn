@@ -33,7 +33,7 @@ export default function SingleDeveloperDisplay(props) {
             </p>
             <p>{props.profile.location ? props.profile.location : null}</p>
             <Link
-              to={"developerProfile/:" + props.profile.handle}
+              to={"/developerProfile/:" + props.profile.handle}
               className="btn btn-info"
             >
               View Profile
