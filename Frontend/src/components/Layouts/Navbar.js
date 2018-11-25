@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { NavLink, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authAction";
+import Sidebar from "./Sidebar";
 
 class Navbar extends Component {
   OnLogoutClick = e => {
@@ -48,31 +49,38 @@ class Navbar extends Component {
 
     return (
       <header>
-        <nav className="navbar navbar-expand-sm navbar-dark bg-dark mb-4">
-          <div className="container">
-            <NavLink className="navbar-brand" to="/">
-              DevtoDev
-            </NavLink>
-            <button
-              className="navbar-toggler"
-              type="button"
-              data-toggle="collapse"
-              data-target="#mobile-nav"
-            >
-              <span className="navbar-toggler-icon" />
-            </button>
-            <div className="collapse navbar-collapse" id="mobile-nav">
-              <ul className="navbar-nav mr-auto">
-                <li className="nav-item">
-                  <NavLink className="nav-link" to="/profiles">
-                    Developers
-                  </NavLink>
-                </li>
-              </ul>
-              {isAuthenticated ? authLinks : guestLinks}
-            </div>
+        <div className="row">
+          <div className="col-md-2">
+            <Sidebar />
           </div>
-        </nav>
+          <div className="col-md-10">
+            <nav className="navbar navbar-expand-sm navbar-dark bg-dark mb-4">
+              <div className="container">
+                <NavLink className="navbar-brand" to="/">
+                  DevtoDev
+                </NavLink>
+                <button
+                  className="navbar-toggler"
+                  type="button"
+                  data-toggle="collapse"
+                  data-target="#mobile-nav"
+                >
+                  <span className="navbar-toggler-icon" />
+                </button>
+                <div className="collapse navbar-collapse" id="mobile-nav">
+                  <ul className="navbar-nav mr-auto">
+                    <li className="nav-item">
+                      <NavLink className="nav-link" to="/profiles">
+                        Developers
+                      </NavLink>
+                    </li>
+                  </ul>
+                  {isAuthenticated ? authLinks : guestLinks}
+                </div>
+              </div>
+            </nav>
+          </div>
+        </div>
       </header>
     );
   }
