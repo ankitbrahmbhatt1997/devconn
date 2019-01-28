@@ -33,12 +33,13 @@ app.use("/api/auth", auth);
 app.use("/api/profile", profile);
 app.use("/api/posts", posts);
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(publicPath));
-  app.get("*", (req, res) => {
-    res.send(path.join(publicPath, "index.html"));
-  });
-}
+app.use(express.static(publicPath));
+app.get("*", (req, res) => {
+  res.send(path.join(publicPath, "index.html"));
+});
+// if (process.env.NODE_ENV === "production") {
+
+// }
 // Starting a server
 let port = process.env.PORT || 5000;
 app.listen(port, () => {
