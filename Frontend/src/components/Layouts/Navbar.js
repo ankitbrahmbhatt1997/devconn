@@ -50,10 +50,7 @@ class Navbar extends Component {
     return (
       <header>
         <div className="row">
-          <div className="col-md-2">
-            <Sidebar />
-          </div>
-          <div className="col-md-10">
+          <div className="col-md-12">
             <nav className="navbar navbar-expand-sm navbar-dark bg-dark mb-4">
               <div className="container">
                 <NavLink className="navbar-brand" to="/">
