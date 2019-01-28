@@ -3,7 +3,7 @@ const path = require("path");
 const mongoose = require("./config/mongoose");
 const bodyParser = require("body-parser");
 const passport = require("passport");
-const publicPath = path.join(__dirname, "Frontend/public");
+const publicPath = path.join(__dirname, "Frontend", "public");
 const app = express();
 
 // require Routes
