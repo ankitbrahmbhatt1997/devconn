@@ -1,5 +1,5 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-
+const port = process.env.PORT || 5000;
 const path = require("path");
 
 module.exports = {
@@ -46,7 +46,7 @@ module.exports = {
     contentBase: path.join(__dirname, "public"),
     historyApiFallback: true,
     proxy: {
-      "/api": "http://localhost:5000"
+      "/api": "http://localhost:" + port
     }
   }
 };
