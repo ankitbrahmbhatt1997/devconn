@@ -1,4 +1,4 @@
 module.exports = {
-  mongoURI: "mongodb://localhost:27017/DevConnector",
+  mongoURI: "mongodb://<dbuser>:<dbpassword>@ds213755.mlab.com:13755/devtodev",
   tokenSECRET: "Shippuden"
 };
